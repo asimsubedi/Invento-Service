@@ -3,6 +3,7 @@ package com.nivtek.invento.service;
 import com.nivtek.invento.model.Product;
 
 import java.util.List;
+import java.util.Optional;
 
 /*
  * @project Invento
@@ -17,4 +18,18 @@ public interface ProductService {
      * @return List<Product>
      */
     List<Product> findAll();
+
+    /**
+     * @param productid
+     * @return Optional of Product
+     */
+    Optional<Product> findById(int productid);
+
+    /**
+     * @param product
+     * @return Product Object that is saved
+     */
+    Product saveProduct(Product product);
+
+    Product createProduct(int supplierId, Product product);
 }
