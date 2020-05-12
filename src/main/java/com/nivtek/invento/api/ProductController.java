@@ -41,7 +41,10 @@ public class ProductController {
 
     @GetMapping("/products/{id}")
     public Product getProduct(@PathVariable(value = "id") int productid) {
-        int thisProductSupplierId = productRepository.findSupplierByProductId(productid);
+        List<Object[]> sqlResult = productRepository.findSupplierByProductId(productid);
+        System.out.println(sqlResult.size() +  " has sized ");
+        Integer thisProductSupplierId = (Integer) sqlResult.get(0)[0];
+        System.out.println(thisProductSupplierId + " here");
         Supplier thisSupplier = supplierController.getSupplier(thisProductSupplierId);
         Product responseProduct = productService.findById(productid)
                 .orElseThrow(() -> new ResourceNotFoundException("Oops! Product Not found with id : " + productid));
@@ -53,7 +56,7 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public Product saveProduct(@RequestBody Product product) {
+    public Product mysql(@RequestBody Product product) {
         return productService.saveProduct(product);
     }
 

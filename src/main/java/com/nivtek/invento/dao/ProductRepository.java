@@ -21,5 +21,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Optional<Product> findByIdAndSupplierId(int id, int supplierId);
 
     @Query("select supplier.id from Product where id= :id")
-    int findSupplierByProductId(@Param("id") int productId);
+    List<Object[]> findSupplierByProductId(@Param("id") int productId);
 }
