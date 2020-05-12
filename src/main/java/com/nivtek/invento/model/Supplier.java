@@ -12,7 +12,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "supplier")
-public class Supplier  implements Serializable {
+public class Supplier implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

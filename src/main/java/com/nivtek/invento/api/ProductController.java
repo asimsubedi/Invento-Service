@@ -3,6 +3,7 @@ package com.nivtek.invento.api;
 import com.nivtek.invento.dao.ProductRepository;
 import com.nivtek.invento.exceptions.ResourceNotFoundException;
 import com.nivtek.invento.model.Product;
+import com.nivtek.invento.model.Supplier;
 import com.nivtek.invento.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,11 +18,15 @@ import java.util.List;
  * @author AsimSubedi created on 5/8/2020
  */
 @RestController
+@CrossOrigin("http://localhost:4200")
 @RequestMapping("/api/v1/")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private SupplierController supplierController;
 
     @Autowired
     private ProductRepository productRepository;
@@ -36,8 +41,15 @@ public class ProductController {
 
     @GetMapping("/products/{id}")
     public Product getProduct(@PathVariable(value = "id") int productid) {
-        return this.productService.findById(productid)
+        int thisProductSupplierId = productRepository.findSupplierByProductId(productid);
+        Supplier thisSupplier = supplierController.getSupplier(thisProductSupplierId);
+        Product responseProduct = productService.findById(productid)
                 .orElseThrow(() -> new ResourceNotFoundException("Oops! Product Not found with id : " + productid));
+
+        responseProduct.setSupplier(thisSupplier);
+
+        System.out.println(responseProduct);
+        return responseProduct;
     }
 
     @PostMapping("/products")
@@ -54,8 +66,8 @@ public class ProductController {
     }
 
     @GetMapping("/suppliers/{id}/products")
-    public Page<Product> getAllProductsBySupplierId(@PathVariable(value = "id") int id, Pageable pageable) {
-        return productRepository.findBySupplierId(id, pageable);
+    public List<Product> getAllProductsBySupplierId(@PathVariable(value = "id") int id) {
+        return productRepository.findBySupplierId(id);
     }
 
     @PostMapping("/suppliers/{id}/products")
