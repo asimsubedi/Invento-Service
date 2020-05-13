@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 /*
@@ -30,6 +31,11 @@ public class ProductController {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @GetMapping("/basicauth")
+    public Principal basicAuth(Principal user){
+        return user;
+    }
 
     /**
      * @return List of Product Objects. If no Products are present then it returns empty list.
