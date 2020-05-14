@@ -3,10 +3,8 @@ package com.nivtek.invento.api;
 import com.nivtek.invento.dao.ProductRepository;
 import com.nivtek.invento.exceptions.ResourceNotFoundException;
 import com.nivtek.invento.model.Product;
-import com.nivtek.invento.model.Supplier;
 import com.nivtek.invento.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -32,8 +30,14 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
+    /**
+     * This endpoint is being called when angular-client submits the login form
+     *
+     * @param user
+     * @return Principal Object with all auth information
+     */
     @GetMapping("/basicauth")
-    public Principal basicAuth(Principal user){
+    public Principal basicAuth(Principal user) {
         return user;
     }
 
@@ -45,56 +49,58 @@ public class ProductController {
         return productService.findAll();
     }
 
+    /**
+     * This endpoint is meant to return individual Product object for given id.
+     *
+     * @param productid
+     * @return Product Object.
+     */
     @GetMapping("/products/{id}")
     public Product getProduct(@PathVariable(value = "id") int productid) {
-        List<Object[]> sqlResult = productRepository.findSupplierByProductId(productid);
-        System.out.println(sqlResult.size() +  " has sized ");
-        Integer thisProductSupplierId = (Integer) sqlResult.get(0)[0];
-        System.out.println(thisProductSupplierId + " here");
-        Supplier thisSupplier = supplierController.getSupplier(thisProductSupplierId);
-        Product responseProduct = productService.findById(productid)
+        return productService.findById(productid)
                 .orElseThrow(() -> new ResourceNotFoundException("Oops! Product Not found with id : " + productid));
 
-        responseProduct.setSupplier(thisSupplier);
-
-        System.out.println(responseProduct);
-        return responseProduct;
     }
 
-    @PostMapping("/products")
-    public Product saveProduct(@RequestBody Product product) {
-        return productService.saveProduct(product);
-    }
-
-    /*@DeleteMapping("/products/{id}")
-    public ResponseEntity<Object> deleteProduct(@PathVariable(value = "id") int productId) {
-        return productRepository.findById(productId).map(product -> {
-            productRepository.delete(product);
-            return ResponseEntity.ok().build();
-        }).orElseThrow(() -> new ResourceNotFoundException("Sorry!! product of id: " + productId + " Not Found!!!"));
-    }*/
-
+    /**
+     * This method will delete the product object for requested id.
+     *
+     * @param productId
+     * @return Map<String, Boolean>
+     */
     @DeleteMapping("/products/{id}")
     @CrossOrigin("http://localhost:4200")
-    public Map<String, Boolean> deleteProducts (@PathVariable(value = "id") int productId) {
+    public Map<String, Boolean> deleteProducts(@PathVariable(value = "id") int productId) {
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ResourceNotFoundException("Not Found Product: " + productId)
         );
 
         productRepository.delete(product);
-
-        Map<String, Boolean>  response = new HashMap<>();
-
+        Map<String, Boolean> response = new HashMap<>();
         response.put("removed", Boolean.TRUE);
+
         return response;
     }
 
 
+    /**
+     * This method returns all the products for particular supplier.
+     *
+     * @param id
+     * @return List<Product>
+     */
     @GetMapping("/suppliers/{id}/products")
     public List<Product> getAllProductsBySupplierId(@PathVariable(value = "id") int id) {
         return productRepository.findBySupplierId(id);
     }
 
+    /**
+     * This method will create a Product object for particular supplier.
+     *
+     * @param supplierId
+     * @param product
+     * @return Product Object
+     */
     @PostMapping("/suppliers/{id}/products")
     public Product createProduct(@PathVariable(value = "id") int supplierId, @RequestBody Product product) {
         return productService.createProduct(supplierId, product);
