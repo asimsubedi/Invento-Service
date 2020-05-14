@@ -6,13 +6,13 @@ import com.nivtek.invento.model.Product;
 import com.nivtek.invento.model.Supplier;
 import com.nivtek.invento.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*
  * @project Invento
@@ -20,7 +20,7 @@ import java.util.List;
  */
 @RestController
 @CrossOrigin("http://localhost:4200")
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 public class ProductController {
 
     @Autowired
@@ -62,17 +62,33 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public Product mysql(@RequestBody Product product) {
+    public Product saveProduct(@RequestBody Product product) {
         return productService.saveProduct(product);
     }
 
-    @DeleteMapping("/products/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable(value = "id") int productId) {
+    /*@DeleteMapping("/products/{id}")
+    public ResponseEntity<Object> deleteProduct(@PathVariable(value = "id") int productId) {
         return productRepository.findById(productId).map(product -> {
             productRepository.delete(product);
             return ResponseEntity.ok().build();
         }).orElseThrow(() -> new ResourceNotFoundException("Sorry!! product of id: " + productId + " Not Found!!!"));
+    }*/
+
+    @DeleteMapping("/products/{id}")
+    @CrossOrigin("http://localhost:4200")
+    public Map<String, Boolean> deleteProducts (@PathVariable(value = "id") int productId) {
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ResourceNotFoundException("Not Found Product: " + productId)
+        );
+
+        productRepository.delete(product);
+
+        Map<String, Boolean>  response = new HashMap<>();
+
+        response.put("removed", Boolean.TRUE);
+        return response;
     }
+
 
     @GetMapping("/suppliers/{id}/products")
     public List<Product> getAllProductsBySupplierId(@PathVariable(value = "id") int id) {
