@@ -4,7 +4,6 @@ import com.nivtek.invento.dao.ProductRepository;
 import com.nivtek.invento.exceptions.ResourceNotFoundException;
 import com.nivtek.invento.model.Product;
 import com.nivtek.invento.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -21,14 +20,17 @@ import java.util.Map;
 @RequestMapping("/api/v1")
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
 
-    @Autowired
-    private SupplierController supplierController;
+    private final SupplierController supplierController;
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+    public ProductController(ProductService productService, SupplierController supplierController, ProductRepository productRepository) {
+        this.productService = productService;
+        this.supplierController = supplierController;
+        this.productRepository = productRepository;
+    }
 
     /**
      * This endpoint is being called when angular-client submits the login form
