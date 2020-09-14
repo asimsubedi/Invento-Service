@@ -1,6 +1,6 @@
 # Invento - Service
 
-Invento - is an inventory Management Service which gives information about the products and suppliers. 
+Invento - is an inventory Management Service which gives information about the products and suppliers. The project is built to refresh the springboot and API service development knowledge.
 
 ## Tools and Technologies
 - SpringBoot
